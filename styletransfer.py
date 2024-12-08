@@ -9,33 +9,44 @@ import argparse
 
 def style_Transfer(content_dir, style_dir, result_dir):
     models = load_model()
-    i = 1
+    
     content_images = [f for f in os.listdir(content_dir) if f.lower().endswith(('png', 'jpg', 'jpeg'))]
-    style_images = [f for f in os.listdir(style_dir) if f.lower().endswith(('png', 'jpg', 'jpeg'))]
+    
     for model_name, model in models.items():
-        for content_name in content_images:
-            content_path = os.path.join(content_dir, content_name)
-            for style_name in style_images:
-                print(f"{i}) {content_name} + {style_name}")
-                style_path = os.path.join(style_dir, style_name)
+        result_model_name_path = os.path.join(result_dir, model_name)
+        os.makedirs(result_model_name_path, exist_ok=True) # dir: AdaAttN, AdaIN
+        i = 1
+        for style_category in os.listdir(style_dir): # 10 category trong style
+            result_category_path = os.path.join(result_model_name_path, style_category) # AdaAttN -> result_category_path
+            os.makedirs(result_category_path, exist_ok=True)
 
-                content_image = Image.open(content_path).convert('RGB')
-                style_image = Image.open(style_path).convert('RGB')
-            
-                style_tensor = model['preprocess'](style_image)
-                content_tensor = model['preprocess'](content_image)
-                output_tensor = model['model'](content_tensor, style_tensor)
-                output_image = tensor_to_pil(output_tensor[0])
+            style_category_path = os.path.join(style_dir, style_category)
 
-                result_path = os.path.join(result_dir, model_name, f"{content_name.split('.')[0]}_{style_name.split('.')[0]}.png")
-                os.makedirs(os.path.dirname(result_path), exist_ok=True)
+            for style_name in os.listdir(style_category_path):
+                style_path = os.path.join(style_category_path, style_name)
 
-                output_image.save(result_path, format="PNG")
-                print("Ket qua da duoc luu")
-                i += 1
+                for content_name in content_images:
+                    content_path = os.path.join(content_dir, content_name)
+                    print(f"{i}) {content_name} + {style_name}")
+                    
+
+                    content_image = Image.open(content_path).convert('RGB')
+                    style_image = Image.open(style_path).convert('RGB')
+                
+                    style_tensor = model['preprocess'](style_image)
+                    content_tensor = model['preprocess'](content_image)
+                    output_tensor = model['model'](content_tensor, style_tensor)
+                    output_image = tensor_to_pil(output_tensor[0])
+
+                    output_path = os.path.join(result_category_path, f"{content_name.split('.')[0]}+{style_name.split('.')[0]}.png")
+                    
+
+                    output_image.save(output_path, format="PNG")
+                    print("Ket qua da duoc luu")
+                    i += 1
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Style Transfer Script")
+    parser = argparse.ArgumentParser()
     parser.add_argument("--content_dir", type=str, required=True, help="Folder containing content images.")
     parser.add_argument("--style_dir", type=str, required=True, help="Folder containing style images.")
     parser.add_argument("--result_dir", type=str, required=True, help="Folder containing result images.")
