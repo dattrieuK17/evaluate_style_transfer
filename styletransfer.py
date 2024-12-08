@@ -10,7 +10,7 @@ import argparse
 def style_Transfer(content_dir, style_dir, result_dir):
     models = load_model()
     
-    content_images = [f for f in os.listdir(content_dir) if f.lower().endswith(('png', 'jpg', 'jpeg'))]
+    content_images = [f for f in os.listdir(content_dir)]
     
     for model_name, model in models.items():
         result_model_name_path = os.path.join(result_dir, model_name)
