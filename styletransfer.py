@@ -42,4 +42,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    style_Transfer(args.content_dir, args.style_dir, args.method, args.size)
+    style_Transfer(args.content_dir, args.style_dir, args.result_dir)
