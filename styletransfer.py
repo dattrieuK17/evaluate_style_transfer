@@ -13,6 +13,7 @@ def style_Transfer(content_dir, style_dir, result_dir):
     content_images = [f for f in os.listdir(content_dir)]
     
     for model_name, model in models.items():
+        if model_name == "AdaAttnN": continue
         result_model_name_path = os.path.join(result_dir, model_name)
         os.makedirs(result_model_name_path, exist_ok=True) # dir: AdaAttN, AdaIN
         i = 1
